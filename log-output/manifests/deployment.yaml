@@ -13,6 +13,10 @@ spec:
         app: log-output
     spec:
       containers:
-        - name: log-output
-          image: duonghoang711/log-output:latest
-          imagePullPolicy: Always
+      - name: log-output
+        image: duonghoang711/log-output:1.7
+        env:
+        - name: PORT
+          value: "3000"
+        ports:
+        - containerPort: 3000
