@@ -1,20 +1,17 @@
 const express = require('express');
+const fs = require('fs');
 const app = express();
 
-// Store the random string and timestamp
-const randomString = require('crypto').randomBytes(16).toString('hex');
-const startTime = new Date();
-
 const PORT = process.env.PORT || 3000;
+const filePath = '/usr/src/app/files/log.txt';
 
-// Endpoint to get current status
 app.get('/', (req, res) => {
-  const currentTime = new Date();
-  res.json({
-    timestamp: currentTime.toISOString(),
-    random_string: randomString,
-    uptime_ms: currentTime - startTime
-  });
+  try {
+    const content = fs.readFileSync(filePath, 'utf8');
+    res.send(content);
+  } catch (error) {
+    res.status(500).send('Error reading file');
+  }
 });
 
 app.listen(PORT, () => {
