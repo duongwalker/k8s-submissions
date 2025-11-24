@@ -1,12 +1,14 @@
 FROM node:18-alpine
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
 COPY package*.json ./
 
 RUN npm install
 
-COPY . .
+COPY index.js .
+
+RUN mkdir -p /usr/src/app/data
 
 EXPOSE 3000
 

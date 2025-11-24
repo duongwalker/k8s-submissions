@@ -12,9 +12,16 @@ spec:
       labels:
         app: ping-pong
     spec:
+      volumes:
+      - name: shared-storage
+        persistentVolumeClaim:
+          claimName: shared-pvc
       containers:
       - name: ping-pong
-        image: duonghoang711/ping-pong:1.9
+        image: duonghoang711/ping-pong:1.11
+        volumeMounts:
+        - name: shared-storage
+          mountPath: /usr/src/app/data
         env:
         - name: PORT
           value: "3000"
