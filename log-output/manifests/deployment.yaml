@@ -15,6 +15,9 @@ spec:
       volumes:
       - name: shared-files
         emptyDir: {}
+      - name: shared-storage
+        persistentVolumeClaim:
+          claimName: shared-pvc
       containers:
       - name: writer
         image: duonghoang711/log-output-writer:1.10
@@ -22,10 +25,12 @@ spec:
         - name: shared-files
           mountPath: /usr/src/app/files
       - name: reader
-        image: duonghoang711/log-output-reader:1.10
+        image: duonghoang711/log-output-reader:1.11
         volumeMounts:
         - name: shared-files
           mountPath: /usr/src/app/files
+        - name: shared-storage
+          mountPath: /usr/src/app/data
         env:
         - name: PORT
           value: "3000"

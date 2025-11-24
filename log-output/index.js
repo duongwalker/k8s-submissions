@@ -3,14 +3,22 @@ const fs = require('fs');
 const app = express();
 
 const PORT = process.env.PORT || 3000;
-const filePath = '/usr/src/app/files/log.txt';
+const logFile = '/usr/src/app/files/log.txt';
+const counterFile = '/usr/src/app/data/counter.txt';
 
 app.get('/', (req, res) => {
   try {
-    const content = fs.readFileSync(filePath, 'utf8');
-    res.send(content);
+    const logContent = fs.readFileSync(logFile, 'utf8').trim();
+    
+    let counter = 0;
+    if (fs.existsSync(counterFile)) {
+      counter = parseInt(fs.readFileSync(counterFile, 'utf8')) || 0;
+    }
+    
+    const output = `${logContent}\nPing / Pongs: ${counter}`;
+    res.send(output);
   } catch (error) {
-    res.status(500).send('Error reading file');
+    res.status(500).send('Error reading files');
   }
 });
 
