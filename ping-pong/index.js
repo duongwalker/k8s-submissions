@@ -1,26 +1,21 @@
 const express = require('express');
-const fs = require('fs');
 const app = express();
 
-const PORT = process.env.PORT || 3000;
-const counterFile = '/usr/src/app/data/counter.txt';
-
-// Read counter from file or start at 0
 let counter = 0;
-if (fs.existsSync(counterFile)) {
-  try {
-    counter = parseInt(fs.readFileSync(counterFile, 'utf8')) || 0;
-  } catch (err) {
-    console.log('Starting counter at 0');
-  }
-}
 
+const PORT = process.env.PORT || 3000;
+
+// Existing endpoint that increments counter
 app.get('/pingpong', (req, res) => {
   res.send(`pong ${counter}`);
   counter++;
-  
-  // Write counter to file
-  fs.writeFileSync(counterFile, counter.toString());
+  console.log(`Counter incremented: ${counter}`);
+});
+
+// NEW endpoint that returns counter without incrementing
+app.get('/pingpongs', (req, res) => {
+  res.json({ counter: counter });
+  console.log(`Counter requested: ${counter}`);
 });
 
 app.listen(PORT, () => {
