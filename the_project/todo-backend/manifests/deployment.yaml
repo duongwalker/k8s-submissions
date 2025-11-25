@@ -15,6 +15,34 @@ spec:
     spec:
       containers:
       - name: todo-backend
-        image: duonghoang711/todo-backend:2.2
+        image: duonghoang711/todo-backend:2.8
         ports:
         - containerPort: 3000
+        env:
+        - name: PORT
+          value: "3000"
+        - name: DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: todo-postgres-secret
+              key: DB_HOST
+        - name: DB_PORT
+          valueFrom:
+            secretKeyRef:
+              name: todo-postgres-secret
+              key: DB_PORT
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: todo-postgres-secret
+              key: DB_NAME
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: todo-postgres-secret
+              key: DB_USER
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: todo-postgres-secret
+              key: DB_PASSWORD
