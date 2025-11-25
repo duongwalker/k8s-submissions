@@ -12,9 +12,16 @@ spec:
       labels:
         app: todo-app
     spec:
+      volumes:
+      - name: image-storage
+        persistentVolumeClaim:
+          claimName: image-pvc
       containers:
       - name: todo-app
-        image: duonghoang711/todo-app:1.5
+        image: duonghoang711/todo-app:1.12
+        volumeMounts:
+        - name: image-storage
+          mountPath: /usr/src/app/images
         env:
         - name: PORT
           value: "3000"
