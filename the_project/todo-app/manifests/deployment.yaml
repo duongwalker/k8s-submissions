@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: todo-app
+  namespace: project
 spec:
   replicas: 1
   selector:
@@ -18,7 +19,7 @@ spec:
           claimName: image-pvc
       containers:
       - name: todo-app
-        image: duonghoang711/todo-app:2.2
+        image: duonghoang711/todo-app:2.4
         volumeMounts:
         - name: image-storage
           mountPath: /usr/src/app/images
@@ -26,6 +27,6 @@ spec:
         - name: PORT
           value: "3000"
         - name: TODO_BACKEND_URL
-          value: "http://todo-backend-service/todos"
+          value: "http://todo-backend-service.project/todos"
         ports:
         - containerPort: 3000
