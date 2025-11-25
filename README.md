@@ -16,4 +16,9 @@
 - [1.10](https://github.com/duongwalker/k8s-submissions/tree/1.10)
 - [1.11](https://github.com/duongwalker/k8s-submissions/tree/1.11)
 - [1.12](https://github.com/duongwalker/k8s-submissions/tree/1.12)
+- [1.13](https://github.com/duongwalker/k8s-submissions/tree/1.13)
+
+### Chapter 3
+
+- [2.1](https://github.com/duongwalker/k8s-submissions/tree/2.1)
 
