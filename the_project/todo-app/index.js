@@ -8,7 +8,8 @@ const PORT = process.env.PORT || 3000;
 
 const IMAGE_DIR = '/usr/src/app/images';
 const IMAGE_PATH = path.join(IMAGE_DIR, 'image.jpg');
-const IMAGE_URL = 'https://picsum.photos/1200';
+const IMAGE_URL = process.env.IMAGE_URL || 'https://picsum.photos/1200';
+const IMAGE_CACHE_TTL_MINUTES = parseInt(process.env.IMAGE_CACHE_TTL_MINUTES) || 10;
 const TODO_BACKEND_URL = process.env.TODO_BACKEND_URL || 'http://todo-backend-service/todos';
 
 // Parse form data
@@ -58,8 +59,8 @@ async function ensureImage() {
 
       console.log(`Image age: ${ageInMinutes.toFixed(2)} minutes`);
 
-      if (ageInMinutes > 10) {
-        console.log('Image is older than 10 minutes, downloading new one...');
+      if (ageInMinutes > IMAGE_CACHE_TTL_MINUTES) {
+        console.log(`Image is older than ${IMAGE_CACHE_TTL_MINUTES} minutes, downloading new one...`);
         await fetchAndSaveImage();
       } else {
         console.log('Using cached image');
