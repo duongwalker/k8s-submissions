@@ -15,9 +15,19 @@ spec:
     spec:
       containers:
       - name: ping-pong
-        image: duonghoang711/ping-pong:2.1
+        image: duonghoang711/ping-pong:2.7
         env:
         - name: PORT
           value: "3000"
+        - name: DB_HOST
+          value: "postgres"
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_NAME
+          value: "pingpong"
+        - name: DB_USER
+          value: "postgres"
+        - name: DB_PASSWORD
+          value: "postgres"
         ports:
         - containerPort: 3000
