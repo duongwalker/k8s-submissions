@@ -18,12 +18,14 @@ spec:
           claimName: image-pvc
       containers:
       - name: todo-app
-        image: duonghoang711/todo-app:1.13
+        image: duonghoang711/todo-app:2.2
         volumeMounts:
         - name: image-storage
           mountPath: /usr/src/app/images
         env:
         - name: PORT
           value: "3000"
+        - name: TODO_BACKEND_URL
+          value: "http://todo-backend-service/todos"
         ports:
         - containerPort: 3000
