@@ -16,6 +16,9 @@ spec:
       volumes:
       - name: shared-files
         emptyDir: {}
+      - name: config-volume
+        configMap:
+          name: log-output-config
       containers:
       - name: writer
         image: duonghoang711/log-output-writer:1.10
@@ -23,14 +26,21 @@ spec:
         - name: shared-files
           mountPath: /usr/src/app/files
       - name: reader
-        image: duonghoang711/log-output-reader:2.1
+        image: duonghoang711/log-output-reader:2.5
         volumeMounts:
         - name: shared-files
           mountPath: /usr/src/app/files
+        - name: config-volume
+          mountPath: /usr/src/app/config
         env:
         - name: PORT
           value: "3000"
         - name: PING_PONG_URL
           value: "http://ping-pong-service/pingpongs"
+        - name: MESSAGE
+          valueFrom:
+            configMapKeyRef:
+              name: log-output-config
+              key: MESSAGE
         ports:
         - containerPort: 3000
