@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: todo-backend
-        image: duonghoang711/todo-backend:2.8
+        image: duonghoang711/todo-backend:2.10
         ports:
         - containerPort: 3000
         env:
