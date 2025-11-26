@@ -1,0 +1,18 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: log-output-route
+  namespace: exercises
+spec:
+  parentRefs:
+  - name: main-gateway
+    port: 80
+  hostnames: []
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: log-output-service
+      port: 80
