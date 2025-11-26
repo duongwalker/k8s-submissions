@@ -36,13 +36,8 @@ async function initializeDatabase() {
   }
 }
 
-// Health check endpoint
-app.get('/', (req, res) => {
-  res.send('pong');
-});
-
-// Endpoint that increments counter
-app.get('/pingpong', async (req, res) => {
+// Health check endpoint - main endpoint that increments counter
+app.get('/', async (req, res) => {
   try {
     // Update counter in database
     const result = await dbClient.query(
@@ -54,19 +49,6 @@ app.get('/pingpong', async (req, res) => {
   } catch (error) {
     console.error('Error updating counter:', error.message);
     res.status(500).send('Error updating counter');
-  }
-});
-
-// Endpoint that returns counter without incrementing
-app.get('/pingpongs', async (req, res) => {
-  try {
-    const result = await dbClient.query('SELECT counter FROM pingpong WHERE id = 1');
-    const counter = result.rows[0].counter;
-    res.json({ counter: counter });
-    console.log(`Counter requested: ${counter}`);
-  } catch (error) {
-    console.error('Error reading counter:', error.message);
-    res.status(500).json({ error: 'Error reading counter' });
   }
 });
 
