@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-backend
+  namespace: project
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-backend
+  template:
+    metadata:
+      labels:
+        app: todo-backend
+    spec:
+      containers:
+      - name: todo-backend
+        image: duonghoang711/todo-backend:2.10
+        ports:
+        - containerPort: 3000
+        env:
+        - name: PORT
+          value: "3000"
+        - name: DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: todo-postgres-secret
+              key: DB_HOST
+        - name: DB_PORT
+          valueFrom:
+            secretKeyRef:
+              name: todo-postgres-secret
+              key: DB_PORT
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: todo-postgres-secret
+              key: DB_NAME
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: todo-postgres-secret
+              key: DB_USER
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: todo-postgres-secret
+              key: DB_PASSWORD
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi

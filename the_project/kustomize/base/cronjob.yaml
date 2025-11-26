@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: random-todo
+  namespace: project
+spec:
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: default
+          containers:
+          - name: random-todo-job
+            image: duonghoang711/random-todo-cronjob:latest
+            env:
+            - name: TODO_BACKEND_URL
+              value: "http://todo-backend-service.project/todos"
+            resources:
+              requests:
+                cpu: 100m
+                memory: 128Mi
+              limits:
+                cpu: 500m
+                memory: 512Mi
+          restartPolicy: OnFailure

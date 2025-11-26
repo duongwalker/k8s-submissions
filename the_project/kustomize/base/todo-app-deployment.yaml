@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-app
+  namespace: project
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-app
+  template:
+    metadata:
+      labels:
+        app: todo-app
+    spec:
+      volumes:
+      - name: image-storage
+        persistentVolumeClaim:
+          claimName: image-pvc
+      containers:
+      - name: todo-app
+        image: duonghoang711/todo-app:2.6
+        volumeMounts:
+        - name: image-storage
+          mountPath: /usr/src/app/images
+        env:
+        - name: PORT
+          value: "3000"
+        - name: TODO_BACKEND_URL
+          value: "http://todo-backend-service.project/todos"
+        - name: IMAGE_URL
+          value: "https://picsum.photos/1200"
+        - name: IMAGE_CACHE_TTL_MINUTES
+          value: "10"
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
