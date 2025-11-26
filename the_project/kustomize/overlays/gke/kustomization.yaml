@@ -1,0 +1,35 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Reference the base  
+bases:
+  - ../../base
+
+# Namespace for all resources
+namespace: project
+
+# Image updates for GKE
+images:
+  - name: duonghoang711/todo-app
+    newTag: "2.6"
+  - name: duonghoang711/todo-backend
+    newTag: "2.10-amd64"
+  - name: duonghoang711/random-todo-cronjob
+    newTag: "latest"
+
+# Labels applied by overlay
+commonLabels:
+  environment: gke
+  managed-by: kustomize
+
+# Patches to update PVC for GKE dynamic provisioning
+patchesJson6902:
+  - target:
+      group: ""
+      version: v1
+      kind: PersistentVolumeClaim
+      name: image-pvc
+    patch: |-
+      - op: replace
+        path: /spec/storageClassName
+        value: standard-rwo
