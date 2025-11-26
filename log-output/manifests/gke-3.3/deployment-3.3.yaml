@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: log-output
+  namespace: exercises
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: log-output
+  template:
+    metadata:
+      labels:
+        app: log-output
+    spec:
+      containers:
+      - name: log-output
+        image: duonghoang711/log-output:3.2-amd64
+        imagePullPolicy: Always
+        env:
+        - name: PORT
+          value: "3000"
+        - name: MESSAGE
+          valueFrom:
+            configMapKeyRef:
+              name: log-output-config
+              key: MESSAGE
+        ports:
+        - containerPort: 3000
+        volumeMounts:
+        - name: config-volume
+          mountPath: /usr/src/app/config
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+      volumes:
+      - name: config-volume
+        configMap:
+          name: log-output-config
