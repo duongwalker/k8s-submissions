@@ -3,7 +3,7 @@ name: Deploy to GKE
 on:
   push:
     branches:
-      - main
+      - '**'
     paths:
       - 'the_project/**'
       - '.github/workflows/deploy.yaml'
@@ -21,6 +21,16 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+
+    - name: Set namespace from branch name
+      run: |
+        BRANCH_NAME=${{ github.ref_name }}
+        if [ "$BRANCH_NAME" = "main" ]; then
+          NAMESPACE="project"
+        else
+          NAMESPACE="$BRANCH_NAME"
+        fi
+        echo "NAMESPACE=$NAMESPACE" >> $GITHUB_ENV
 
     - name: Authenticate with Google Cloud
       uses: google-github-actions/auth@v2
@@ -45,18 +55,22 @@ jobs:
     - name: Set up kubectl
       uses: azure/setup-kubectl@v3
 
+    - name: Create namespace
+      run: |
+        kubectl create namespace ${{ env.NAMESPACE }} --dry-run=client -o yaml | kubectl apply -f -
+
     - name: Deploy with Kustomize
       run: |
-        kubectl apply -k ${{ env.KUSTOMIZE_PATH }}
+        kubectl apply -k ${{ env.KUSTOMIZE_PATH }} -n ${{ env.NAMESPACE }}
 
     - name: Wait for deployments
       run: |
         kubectl wait --for=condition=available --timeout=300s \
-          deployment/todo-app -n project || true
+          deployment/todo-app -n ${{ env.NAMESPACE }} || true
         kubectl wait --for=condition=available --timeout=300s \
-          deployment/todo-backend -n project || true
+          deployment/todo-backend -n ${{ env.NAMESPACE }} || true
 
-    - name: Get Ingress IP
+    - name: Get deployment status
       run: |
-        echo "Deployment completed successfully!"
-        kubectl get ingress -n project
+        echo "Deployment to namespace '${{ env.NAMESPACE }}' completed!"
+        kubectl get ingress -n ${{ env.NAMESPACE }} || echo "No Ingress found in this namespace"
