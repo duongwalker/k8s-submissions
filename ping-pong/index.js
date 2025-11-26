@@ -36,6 +36,11 @@ async function initializeDatabase() {
   }
 }
 
+// Health check endpoint
+app.get('/', (req, res) => {
+  res.send('pong');
+});
+
 // Endpoint that increments counter
 app.get('/pingpong', async (req, res) => {
   try {
