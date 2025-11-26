@@ -5,9 +5,6 @@ kind: Kustomization
 bases:
   - ../../base
 
-# Namespace for all resources
-namespace: project
-
 # Image updates for GKE
 images:
   - name: duonghoang711/todo-app
