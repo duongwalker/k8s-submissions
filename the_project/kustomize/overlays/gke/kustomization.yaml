@@ -10,7 +10,7 @@ images:
   - name: duonghoang711/todo-app
     newTag: "2.6"
   - name: duonghoang711/todo-backend
-    newTag: "2.10-amd64"
+    newTag: "2.11"
   - name: duonghoang711/random-todo-cronjob
     newTag: "latest"
 

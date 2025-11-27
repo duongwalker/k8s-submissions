@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: todo-backend
-        image: duonghoang711/todo-backend:2.10
+        image: duonghoang711/todo-backend:2.11
         ports:
         - containerPort: 3000
         env:
@@ -46,3 +46,11 @@ spec:
             secretKeyRef:
               name: todo-postgres-secret
               key: DB_PASSWORD
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
