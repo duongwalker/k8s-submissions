@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: cpu-analysis
+  namespace: exercises
+spec:
+  metrics:
+  - name: cpu-usage
+    # Monitor CPU usage of all containers in the exercises namespace
+    # This analysis checks if kubernetes API servers are up (as a health indicator)
+    # In production, this would monitor actual CPU usage with:
+    # sum(rate(container_cpu_usage_seconds_total{namespace="exercises"}[5m]))
+    interval: 30s
+    count: 10  # Check 10 times (10 * 30s = 5 minutes)
+    failureLimit: 3  # Fail the canary if metrics exceed threshold 3 times
+    # This will fail if API server is down (indicating a problem)
+    failureCondition: "asFloat(result[0]) < 1"
+    provider:
+      prometheus:
+        address: http://prometheus.prometheus:9090
+        # Count number of up kubernetes API servers (as health check)
+        query: |
+          count(up{job="kubernetes-apiservers"})
