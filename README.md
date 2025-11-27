@@ -42,6 +42,13 @@
 - [3.7](https://github.com/duongwalker/k8s-submissions/tree/3.7)
 - [3.8](https://github.com/duongwalker/k8s-submissions/tree/3.8)
 - [3.9](https://github.com/duongwalker/k8s-submissions/tree/3.9)
+- [3.10](https://github.com/duongwalker/k8s-submissions/tree/3.10)
+- [3.11](https://github.com/duongwalker/k8s-submissions/tree/3.11)
+- [3.12](https://github.com/duongwalker/k8s-submissions/tree/3.12)
+
+### Chapter 5
+
+- [4.1](https://github.com/duongwalker/k8s-submissions/tree/4.1)
 
 ## 3.9 - DBaaS vs DIY Comparison
 
