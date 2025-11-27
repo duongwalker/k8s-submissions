@@ -76,6 +76,16 @@ app.get('/todos', async (req, res) => {
   }
 });
 
+// GET /health: Readiness probe - check database connectivity
+app.get('/health', async (req, res) => {
+  try {
+    await dbClient.query('SELECT 1');
+    res.status(200).json({ status: 'ready' });
+  } catch (error) {
+    res.status(503).json({ status: 'not ready', error: error.message });
+  }
+});
+
 // POST /todos: Add new todo to database
 app.post('/todos', async (req, res) => {
   const { text } = req.body;
