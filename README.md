@@ -49,6 +49,7 @@
 ### Chapter 5
 
 - [4.1](https://github.com/duongwalker/k8s-submissions/tree/4.1)
+- [4.2](https://github.com/duongwalker/k8s-submissions/tree/4.2)
 
 ## 3.9 - DBaaS vs DIY Comparison
 
