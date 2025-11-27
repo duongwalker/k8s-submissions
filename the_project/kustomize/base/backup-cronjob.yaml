@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+  namespace: project
+spec:
+  schedule: "0 2 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: backup-sa
+          containers:
+          - name: backup
+            image: google/cloud-sdk:debian_component_based
+            env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: todo-postgres-secret
+                  key: POSTGRES_PASSWORD
+            - name: PGUSER
+              value: postgres
+            - name: PGHOST
+              value: todo-postgres
+            - name: PGDATABASE
+              value: todos
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /var/secrets/gcs/key.json
+            - name: GCS_BUCKET
+              value: gs://k8s-submissions-db-backups
+            command:
+            - /bin/sh
+            - -c
+            - |
+              apt-get update && apt-get install -y postgresql-client
+              TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+              pg_dump -h ${PGHOST} -U ${PGUSER} ${PGDATABASE} > /tmp/backup_${TIMESTAMP}.sql
+              gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
+              gcloud storage cp /tmp/backup_${TIMESTAMP}.sql ${GCS_BUCKET}/
+              rm /tmp/backup_${TIMESTAMP}.sql
+            volumeMounts:
+            - name: gcs-credentials
+              mountPath: /var/secrets/gcs
+          volumes:
+          - name: gcs-credentials
+            secret:
+              secretName: gcs-backup-credentials
+          restartPolicy: OnFailure
