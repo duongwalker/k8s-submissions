@@ -21,12 +21,12 @@ spec:
           name: log-output-config
       containers:
       - name: writer
-        image: duonghoang711/log-output-writer:1.10
+        image: duonghoang711/log-output-writer:1.11
         volumeMounts:
         - name: shared-files
           mountPath: /usr/src/app/files
       - name: reader
-        image: duonghoang711/log-output-reader:2.5
+        image: duonghoang711/log-output-reader:2.7
         volumeMounts:
         - name: shared-files
           mountPath: /usr/src/app/files
@@ -36,7 +36,7 @@ spec:
         - name: PORT
           value: "3000"
         - name: PING_PONG_URL
-          value: "http://ping-pong-service/pingpongs"
+          value: "http://ping-pong-service/"
         - name: MESSAGE
           valueFrom:
             configMapKeyRef:
@@ -44,3 +44,11 @@ spec:
               key: MESSAGE
         ports:
         - containerPort: 3000
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3

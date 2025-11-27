@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: ping-pong
-        image: duonghoang711/ping-pong:2.7
+        image: duonghoang711/ping-pong:2.8
         env:
         - name: PORT
           value: "3000"
@@ -31,3 +31,11 @@ spec:
           value: "postgres"
         ports:
         - containerPort: 3000
+        readinessProbe:
+          tcpSocket:
+            host: postgres.exercises.svc.cluster.local
+            port: 5432
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
