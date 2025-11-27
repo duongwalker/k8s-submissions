@@ -8,5 +8,6 @@ data:
     CREATE TABLE IF NOT EXISTS todos (
       id SERIAL PRIMARY KEY,
       text VARCHAR(140) NOT NULL,
+      done BOOLEAN DEFAULT FALSE,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );

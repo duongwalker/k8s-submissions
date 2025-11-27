@@ -83,19 +83,58 @@ app.get('/', async (req, res) => {
     todos = [];
   }
 
-  const todoListHTML = todos.map(todo => `<li>${todo.text}</li>`).join('');
+  const activeTodos = todos.filter(todo => !todo.done);
+  const doneTodos = todos.filter(todo => todo.done);
+
+  const activeTodoListHTML = activeTodos.map(todo => `
+    <li>
+      <span>${todo.text}</span>
+      <button onclick="markAsDone(${todo.id})" style="margin-left: 10px;">Mark as done</button>
+    </li>
+  `).join('');
+
+  const doneTodoListHTML = doneTodos.map(todo => `
+    <li style="color: #888; text-decoration: line-through;">${todo.text}</li>
+  `).join('');
   
   res.set('Content-Type', 'text/html');
-  res.send(`
+  const html = `
     <!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>The project App</title>
+        <title>The Project App</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+          }
+          button {
+            padding: 5px 10px;
+            cursor: pointer;
+          }
+          ul {
+            list-style: none;
+            padding: 0;
+          }
+          li {
+            padding: 8px;
+            margin: 5px 0;
+            background: #f5f5f5;
+            border-radius: 4px;
+          }
+          .done-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+          }
+        </style>
     </head>
     <body>
-        <h1>The project App</h1>
+        <h1>The Project App</h1>
         <img src="/image" alt="Random image from Picsum" style="max-width: 100%; border-radius: 8px;">
         
         <div>
@@ -107,16 +146,51 @@ app.get('/', async (req, res) => {
             </form>
             
             <ul>
-                ${todoListHTML}
+                ${activeTodoListHTML}
             </ul>
         </div>
+
+        ${doneTodos.length > 0 ? `
+        <div class="done-section">
+            <h2>Done</h2>
+            <ul>
+                ${doneTodoListHTML}
+            </ul>
+        </div>
+        ` : ''}
         
         <div style="margin-top: 40px; font-size: 14px; color: #666;">
             DevOps with Kubernetes 2025
         </div>
+
+        <script>
+          async function markAsDone(todoId) {
+            try {
+              console.log('Sending PUT request for todo:', todoId);
+              const response = await fetch('/todos/' + todoId, {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json'
+                }
+              });
+              console.log('Response status:', response.status);
+              if (response.ok) {
+                location.reload();
+              } else {
+                const errData = await response.text();
+                console.error('Error response:', errData);
+                alert('Error marking todo as done: ' + response.status);
+              }
+            } catch (err) {
+              console.error('Error:', err);
+              alert('Error marking todo as done: ' + err.message);
+            }
+          }
+        </script>
     </body>
     </html>
-  `);
+  `;
+  res.send(html);
 });
 
 app.get('/image', (req, res) => {
@@ -146,6 +220,21 @@ app.post('/add-todo', async (req, res) => {
   }
   
   res.redirect('/');
+});
+
+app.put('/todos/:id', async (req, res) => {
+  const { id } = req.params;
+  console.log('PUT /todos/:id received, id:', id);
+  
+  try {
+    console.log('Making request to:', `${TODO_BACKEND_URL}/${id}`);
+    const response = await axios.put(`${TODO_BACKEND_URL}/${id}`);
+    console.log('Backend response:', response.data);
+    res.json(response.data);
+  } catch (err) {
+    console.error('Error marking todo as done:', err.message);
+    res.status(500).json({ error: 'Error marking todo as done', details: err.message });
+  }
 });
 
 app.listen(PORT, () => {

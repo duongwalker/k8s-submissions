@@ -14,6 +14,8 @@ spec:
     metadata:
       labels:
         app: todo-app
+        app.kubernetes.io/part-of: the-project
+        managed-by: kustomize
     spec:
       volumes:
       - name: image-storage
@@ -21,7 +23,8 @@ spec:
           claimName: image-pvc
       containers:
       - name: todo-app
-        image: duonghoang711/todo-app:2.6
+        image: duonghoang711/todo-app:v2
+        imagePullPolicy: Always
         volumeMounts:
         - name: image-storage
           mountPath: /usr/src/app/images
