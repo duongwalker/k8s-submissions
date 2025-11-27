@@ -14,6 +14,8 @@ resources:
   - postgres-secret.yaml
   - postgres-service.yaml
   - postgres-statefulset.yaml
+  - backup-sa.yaml
+  - backup-cronjob.yaml
 
 # Common labels applied to all resources
 commonLabels:
