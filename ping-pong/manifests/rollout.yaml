@@ -1,0 +1,57 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: ping-pong
+  namespace: exercises
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ping-pong
+  template:
+    metadata:
+      labels:
+        app: ping-pong
+    spec:
+      containers:
+      - name: ping-pong
+        image: duonghoang711/ping-pong:2.8
+        env:
+        - name: PORT
+          value: "3000"
+        - name: DB_HOST
+          value: "postgres.exercises.svc.cluster.local"
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_NAME
+          value: "pingpong"
+        - name: DB_USER
+          value: "postgres"
+        - name: DB_PASSWORD
+          value: "postgres"
+        ports:
+        - containerPort: 3000
+        readinessProbe:
+          tcpSocket:
+            host: postgres.exercises.svc.cluster.local
+            port: 5432
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+  strategy:
+    canary:
+      steps:
+      - setWeight: 50
+      - pause: {duration: 5m}
+      - setWeight: 100
+      analysis:
+        templates:
+        - templateName: cpu-analysis
