@@ -66,8 +66,8 @@ app.use(logger);
 // GET /todos: Return all todos from database
 app.get('/todos', async (req, res) => {
   try {
-    const result = await dbClient.query('SELECT id, text FROM todos ORDER BY created_at');
-    const todos = result.rows.map(row => ({ id: row.id, text: row.text }));
+    const result = await dbClient.query('SELECT id, text, done FROM todos ORDER BY created_at');
+    const todos = result.rows.map(row => ({ id: row.id, text: row.text, done: row.done }));
     console.log(JSON.stringify({ timestamp: new Date().toISOString(), event: 'TODOS_FETCHED', count: todos.length }));
     res.json(todos);
   } catch (error) {
@@ -139,6 +139,39 @@ app.post('/todos', async (req, res) => {
   } catch (error) {
     console.error(JSON.stringify({ timestamp: new Date().toISOString(), event: 'ERROR', endpoint: '/todos', error: error.message }));
     res.status(500).json({ error: 'Error creating todo' });
+  }
+});
+
+// PUT /todos/:id: Mark todo as done
+app.put('/todos/:id', async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    const result = await dbClient.query(
+      'UPDATE todos SET done = TRUE WHERE id = $1 RETURNING id, text, done',
+      [id]
+    );
+    
+    if (result.rows.length === 0) {
+      console.log(JSON.stringify({ 
+        timestamp: new Date().toISOString(), 
+        event: 'TODO_NOT_FOUND', 
+        id: id 
+      }));
+      return res.status(404).json({ error: 'Todo not found' });
+    }
+    
+    const todo = result.rows[0];
+    console.log(JSON.stringify({ 
+      timestamp: new Date().toISOString(), 
+      event: 'TODO_MARKED_DONE', 
+      id: todo.id, 
+      text: todo.text 
+    }));
+    res.json({ message: 'Todo marked as done', todo });
+  } catch (error) {
+    console.error(JSON.stringify({ timestamp: new Date().toISOString(), event: 'ERROR', endpoint: '/todos/:id', error: error.message }));
+    res.status(500).json({ error: 'Error updating todo' });
   }
 });
 
