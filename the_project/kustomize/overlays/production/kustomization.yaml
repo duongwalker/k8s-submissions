@@ -16,13 +16,13 @@ resources:
 # Image updates for production
 images:
   - name: duonghoang711/todo-app
-    newTag: "2.6"
+    newTag: "2.7"
   - name: duonghoang711/todo-backend
-    newTag: "2.11"
+    newTag: "2.12"
   - name: duonghoang711/random-todo-cronjob
     newTag: "latest"
   - name: duonghoang711/broadcaster
-    newTag: "v1"
+    newTag: "v2"
 
 # Labels applied by overlay
 commonLabels:
