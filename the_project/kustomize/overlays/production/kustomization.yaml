@@ -46,8 +46,4 @@ patches:
         path: /spec/storageClassName
         value: standard-rwo
 
-# Strategic merge patches
-patchesStrategicMerge:
-  - todo-app-deployment-patch.yaml
-
 
