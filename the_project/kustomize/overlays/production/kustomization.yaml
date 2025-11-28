@@ -45,5 +45,14 @@ patches:
       - op: replace
         path: /spec/storageClassName
         value: standard-rwo
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: todo-app
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/env/1/value
+        value: "http://todo-backend-service/todos"
 
 
