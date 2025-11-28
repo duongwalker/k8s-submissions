@@ -12,16 +12,21 @@ spec:
     metadata:
       labels:
         app: todo-backend
+        app.kubernetes.io/part-of: the-project
+        environment: gke
+        managed-by: kustomize
     spec:
       containers:
       - name: todo-backend
-        image: duonghoang711/todo-backend:2.7
+        image: duonghoang711/todo-backend:2.8
         imagePullPolicy: Always
         ports:
         - containerPort: 3000
         env:
         - name: PORT
           value: "3000"
+        - name: NATS_URL
+          value: "nats://nats.nats:4222"
         - name: DB_HOST
           valueFrom:
             secretKeyRef:
