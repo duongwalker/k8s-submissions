@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: the-project-production
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/duongwalker/k8s-submissions.git
+    targetRevision: HEAD
+    path: the_project/kustomize/overlays/production
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: production
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true

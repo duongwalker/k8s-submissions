@@ -5,8 +5,9 @@ const axios = require('axios');
 const NATS_URL = process.env.NATS_URL || 'nats://nats.nats:4222';
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+const LOG_ONLY = process.env.LOG_ONLY === 'true';
 
-const TELEGRAM_API = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+const TELEGRAM_API = TELEGRAM_BOT_TOKEN ? `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage` : null;
 
 const sc = StringCodec();
 
@@ -21,6 +22,10 @@ async function main() {
     });
 
     console.log(`[${new Date().toISOString()}] Connected to NATS at ${NATS_URL}`);
+
+    if (LOG_ONLY) {
+      console.log(`[${new Date().toISOString()}] Running in LOG_ONLY mode - messages will be logged but not sent to Telegram`);
+    }
 
     // Subscribe to todo events with queue group (for load balancing)
     // Queue group ensures only one subscriber processes each message
@@ -42,9 +47,13 @@ async function main() {
             message = `✔️ Todo Marked as Done:\n📝 ${data.text}\n🆔 ID: ${data.id}`;
           }
 
-          // Send to Telegram
+          // Send to Telegram or just log
           if (message) {
-            await sendTelegramMessage(message);
+            if (LOG_ONLY) {
+              console.log(`[${new Date().toISOString()}] [LOG_ONLY] Would send to Telegram: ${message}`);
+            } else {
+              await sendTelegramMessage(message);
+            }
           }
 
           // Acknowledge the message

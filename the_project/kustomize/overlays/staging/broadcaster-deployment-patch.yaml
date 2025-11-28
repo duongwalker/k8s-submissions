@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: broadcaster
+spec:
+  template:
+    spec:
+      containers:
+      - name: broadcaster
+        env:
+        - name: NATS_URL
+          value: "nats://nats.nats:4222"
+        - name: LOG_ONLY
+          value: "true"
+        # Remove Telegram env vars for staging
+        envFrom: null
+        volumeMounts:
+        - name: empty-dir
+          mountPath: /tmp
+      volumes:
+      - name: empty-dir
+        emptyDir: {}

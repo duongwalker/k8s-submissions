@@ -1,0 +1,60 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Reference the base
+bases:
+  - ../../base
+
+# Namespace for staging
+namespace: staging
+
+# Resources for staging (exclude backup-related resources)
+resources:
+  - namespace.yaml
+  - ../../base/cronjob.yaml
+  - ../../base/todo-app-deployment.yaml
+  - ../../base/todo-app-service.yaml
+  - ../../base/todo-backend-deployment.yaml
+  - ../../base/todo-backend-service.yaml
+  - ../../base/broadcaster-deployment.yaml
+  - ../../base/broadcaster-secret.yaml
+  - ../../base/image-pvc.yaml
+  - ../../base/ingress.yaml
+  - ../../base/postgres-configmap.yaml
+  - ../../base/postgres-secret.yaml
+  - ../../base/postgres-service.yaml
+  - ../../base/postgres-statefulset.yaml
+
+# Image updates for staging
+images:
+  - name: duonghoang711/todo-app
+    newTag: "2.6"
+  - name: duonghoang711/todo-backend
+    newTag: "2.11"
+  - name: duonghoang711/random-todo-cronjob
+    newTag: "latest"
+  - name: duonghoang711/broadcaster
+    newTag: "v1"
+
+# Labels applied by overlay
+commonLabels:
+  environment: staging
+  managed-by: kustomize
+
+# Patches for staging
+patchesJson6902:
+  - target:
+      group: ""
+      version: v1
+      kind: PersistentVolumeClaim
+      name: image-pvc
+    patch: |-
+      - op: replace
+        path: /spec/storageClassName
+        value: standard-rwo
+
+# Strategic merge patch for broadcaster to add LOG_ONLY flag
+patchesStrategicMerge:
+  - broadcaster-deployment-patch.yaml
+
+
