@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/duongwalker/k8s-submissions.git
-    targetRevision: "^[0-9]+\\.[0-9]+$"  # Matches tags like 4.8, 4.9, etc.
+    targetRevision: "4.9"  # Production tracks the latest stable release tag
     path: the_project/kustomize/overlays/production
   destination:
     server: https://kubernetes.default.svc

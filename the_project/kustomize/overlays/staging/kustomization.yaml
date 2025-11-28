@@ -43,6 +43,8 @@ patches:
 # Strategic merge patch for broadcaster to add LOG_ONLY flag
 patchesStrategicMerge:
   - broadcaster-deployment-patch.yaml
+  - todo-app-deployment-patch.yaml
+
 
 
 
