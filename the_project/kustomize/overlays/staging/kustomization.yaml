@@ -28,6 +28,11 @@ commonLabels:
   environment: staging
   managed-by: kustomize
 
+# Test: Scale up todo-app for testing
+replicas:
+  - name: todo-app
+    count: 3
+
 # Patches for staging
 patches:
   - target:
@@ -43,6 +48,7 @@ patches:
 # Strategic merge patch for broadcaster to add LOG_ONLY flag
 patchesStrategicMerge:
   - broadcaster-deployment-patch.yaml
+
 
 
 
