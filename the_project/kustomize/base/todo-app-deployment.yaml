@@ -15,6 +15,7 @@ spec:
       labels:
         app: todo-app
         app.kubernetes.io/part-of: the-project
+        environment: gke
         managed-by: kustomize
     spec:
       volumes:

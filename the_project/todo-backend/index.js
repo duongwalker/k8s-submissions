@@ -1,6 +1,7 @@
 const express = require('express');
 const { Client } = require('pg');
 const morgan = require('morgan');
+const { connect } = require('nats');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -10,6 +11,9 @@ const DB_PORT = process.env.DB_PORT || 5432;
 const DB_NAME = process.env.DB_NAME || 'todos';
 const DB_USER = process.env.DB_USER || 'postgres';
 const DB_PASSWORD = process.env.DB_PASSWORD || 'postgres';
+
+// NATS configuration
+const NATS_URL = process.env.NATS_URL || 'nats://nats.nats:4222';
 
 // PostgreSQL client connection string
 const connectionString = `postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}`;
@@ -37,6 +41,32 @@ const logger = (req, res, next) => {
 
 // Initialize database connection
 let dbClient;
+let natsConnection;
+
+async function initializeNats() {
+  try {
+    natsConnection = await connect({
+      servers: [NATS_URL],
+      reconnect: true,
+      maxReconnectAttempts: -1,
+      reconnectDelayMS: 1000,
+    });
+    console.log(JSON.stringify({ timestamp: new Date().toISOString(), event: 'NATS_CONNECTED', url: NATS_URL }));
+  } catch (error) {
+    console.error(JSON.stringify({ timestamp: new Date().toISOString(), event: 'NATS_CONNECT_FAILED', error: error.message }));
+    // Continue anyway - NATS is optional for now
+  }
+}
+
+async function publishToNats(subject, data) {
+  if (!natsConnection) return;
+  try {
+    const encoder = new TextEncoder();
+    natsConnection.publish(subject, encoder.encode(JSON.stringify(data)));
+  } catch (error) {
+    console.error(JSON.stringify({ timestamp: new Date().toISOString(), event: 'NATS_PUBLISH_ERROR', error: error.message }));
+  }
+}
 
 async function initializeDatabase() {
   dbClient = new Client({ connectionString });
@@ -135,6 +165,15 @@ app.post('/todos', async (req, res) => {
       length: text.length,
       text: text 
     }));
+    
+    // Publish to NATS
+    await publishToNats('todo.created', {
+      id: todo.id,
+      text: todo.text,
+      done: false,
+      timestamp: new Date().toISOString()
+    });
+    
     res.status(201).json({ message: 'Todo created', todo: { id: todo.id, text: todo.text } });
   } catch (error) {
     console.error(JSON.stringify({ timestamp: new Date().toISOString(), event: 'ERROR', endpoint: '/todos', error: error.message }));
@@ -168,6 +207,15 @@ app.put('/todos/:id', async (req, res) => {
       id: todo.id, 
       text: todo.text 
     }));
+    
+    // Publish to NATS
+    await publishToNats('todo.updated', {
+      id: todo.id,
+      text: todo.text,
+      done: true,
+      timestamp: new Date().toISOString()
+    });
+    
     res.json({ message: 'Todo marked as done', todo });
   } catch (error) {
     console.error(JSON.stringify({ timestamp: new Date().toISOString(), event: 'ERROR', endpoint: '/todos/:id', error: error.message }));
@@ -176,7 +224,8 @@ app.put('/todos/:id', async (req, res) => {
 });
 
 // Start server after database is ready
-initializeDatabase().then(() => {
+initializeDatabase().then(async () => {
+  await initializeNats();
   app.listen(PORT, () => {
     console.log(JSON.stringify({ timestamp: new Date().toISOString(), event: 'SERVER_STARTED', port: PORT }));
   });
