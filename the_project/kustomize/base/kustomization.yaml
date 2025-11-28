@@ -8,6 +8,8 @@ resources:
   - todo-app-service.yaml
   - todo-backend-deployment.yaml
   - todo-backend-service.yaml
+  - broadcaster-deployment.yaml
+  - broadcaster-secret.yaml
   - image-pvc.yaml
   - ingress.yaml
   - postgres-configmap.yaml
