@@ -33,7 +33,7 @@ spec:
         - name: PORT
           value: "3000"
         - name: TODO_BACKEND_URL
-          value: "http://todo-backend-service.project/todos"
+          value: "http://todo-backend-service/todos"
         - name: IMAGE_URL
           value: "https://picsum.photos/1200"
         - name: IMAGE_CACHE_TTL_MINUTES
