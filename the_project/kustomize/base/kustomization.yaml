@@ -1,7 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-# List all resources
+# List all resources (backup resources excluded - only added in production)
 resources:
   - cronjob.yaml
   - todo-app-deployment.yaml
@@ -16,8 +16,6 @@ resources:
   - postgres-secret.yaml
   - postgres-service.yaml
   - postgres-statefulset.yaml
-  - backup-sa.yaml
-  - backup-cronjob.yaml
 
 # Common labels applied to all resources
 commonLabels:
@@ -27,3 +25,4 @@ commonLabels:
 # Common annotations
 commonAnnotations:
   kustomize.config.k8s.io/version: "4.0"
+

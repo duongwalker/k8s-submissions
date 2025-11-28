@@ -8,22 +8,9 @@ bases:
 # Namespace for staging
 namespace: staging
 
-# Resources for staging (exclude backup-related resources)
+# Resources for staging (no backup resources)
 resources:
   - namespace.yaml
-  - ../../base/cronjob.yaml
-  - ../../base/todo-app-deployment.yaml
-  - ../../base/todo-app-service.yaml
-  - ../../base/todo-backend-deployment.yaml
-  - ../../base/todo-backend-service.yaml
-  - ../../base/broadcaster-deployment.yaml
-  - ../../base/broadcaster-secret.yaml
-  - ../../base/image-pvc.yaml
-  - ../../base/ingress.yaml
-  - ../../base/postgres-configmap.yaml
-  - ../../base/postgres-secret.yaml
-  - ../../base/postgres-service.yaml
-  - ../../base/postgres-statefulset.yaml
 
 # Image updates for staging
 images:
@@ -42,7 +29,7 @@ commonLabels:
   managed-by: kustomize
 
 # Patches for staging
-patchesJson6902:
+patches:
   - target:
       group: ""
       version: v1
@@ -56,5 +43,8 @@ patchesJson6902:
 # Strategic merge patch for broadcaster to add LOG_ONLY flag
 patchesStrategicMerge:
   - broadcaster-deployment-patch.yaml
+
+
+
 
 
