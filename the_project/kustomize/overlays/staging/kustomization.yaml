@@ -44,6 +44,8 @@ patches:
 patchesStrategicMerge:
   - broadcaster-deployment-patch.yaml
   - todo-app-deployment-patch.yaml
+  - cronjob-patch.yaml
+
 
 
 
