@@ -15,7 +15,7 @@ spec:
             image: duonghoang711/random-todo-cronjob:latest
             env:
             - name: TODO_BACKEND_URL
-              value: "http://todo-backend-service.project/todos"
+              value: "http://todo-backend-service/todos"
             resources:
               requests:
                 cpu: 50m
